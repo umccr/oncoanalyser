@@ -1,3 +1,5 @@
+<h2 align='center'>Archived following the release of <a href="https://github.com/nf-core/oncoanalyser">nf-core/oncoanalyser</a></h2>
+
 # ![nf-core/oncoanalyser](docs/images/nf-core-oncoanalyser_logo_light.png#gh-light-mode-only) ![nf-core/oncoanalyser](docs/images/nf-core-oncoanalyser_logo_dark.png#gh-dark-mode-only)
 
 [![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)
