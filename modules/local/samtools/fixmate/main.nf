@@ -7,9 +7,7 @@ process SAMTOOLS_FIXMATE {
         'biocontainers/samtools:1.22.1--h96c455f_0' }"
 
     input:
-    tuple val(meta), path(cram), path(crai)
-    path genome_fasta
-    path genome_fai
+    tuple val(meta), path(bam), path(bai)
 
     output:
     tuple val(meta), path('*.fixmate.bam'), path('*.fixmate.bam.bai'), emit: bam
@@ -27,24 +25,23 @@ process SAMTOOLS_FIXMATE {
     """
     samtools sort \\
         ${args} \\
-        --reference ${genome_fasta} \\
         --threads ${task.cpus} \\
         -n \\
-        -o ${cram.baseName}.qname_sort.bam \\
-        ${cram}
+        -o ${bam.baseName}.qname_sort.bam \\
+        ${bam}
 
     samtools fixmate \\
         ${args2} \\
         --threads ${task.cpus} \\
-        ${cram.baseName}.qname_sort.bam \\
+        ${bam.baseName}.qname_sort.bam \\
         /dev/stdout | \\
         samtools sort \\
             ${args3} \\
             --threads ${task.cpus} \\
-            -o ${cram.baseName}.fixmate.bam \\
+            -o ${bam.baseName}.fixmate.bam \\
             /dev/stdin
 
-    samtools index --threads ${task.cpus} ${cram.baseName}.fixmate.bam
+    samtools index --threads ${task.cpus} ${bam.baseName}.fixmate.bam
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -54,7 +51,7 @@ process SAMTOOLS_FIXMATE {
 
     stub:
     """
-    touch ${cram.baseName}.fixmate.bam ${cram.baseName}.fixmate.bam.bai
+    touch ${bam.baseName}.fixmate.bam ${bam.baseName}.fixmate.bam.bai
 
     echo -e '${task.process}:\\n  stub: noversions\\n' > versions.yml
     """

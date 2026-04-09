@@ -14,11 +14,6 @@ workflow FIXMATE_REPAIR {
     // Sample data
     ch_inputs // channel: [mandatory] [ meta ]
 
-    // Reference data
-    genome_fasta // channel: [mandatory] /path/to/genome_fasta
-    genome_fai   // channel: [mandatory] /path/to/genome_fai
-    genome_dict  // channel: [mandatory] /path/to/genome_dict
-
     main:
     // Channel for version.yml files
     // channel: [ versions.yml ]
@@ -71,8 +66,6 @@ workflow FIXMATE_REPAIR {
     // Run process
     SAMTOOLS_FIXMATE(
         ch_fixmate_inputs,
-        genome_fasta,
-        genome_fai,
     )
 
     ch_versions = ch_versions.mix(SAMTOOLS_FIXMATE.out.versions)

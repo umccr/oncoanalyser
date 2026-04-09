@@ -142,9 +142,6 @@ workflow WGTS {
 
         FIXMATE_REPAIR(
             ch_inputs,
-            ref_data.genome_fasta,
-            ref_data.genome_fai,
-            ref_data.genome_dict,
         )
 
         ch_versions = ch_versions.mix(FIXMATE_REPAIR.out.versions)
