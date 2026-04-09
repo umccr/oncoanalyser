@@ -139,6 +139,12 @@
                     "description": "UMI duplex delimiter as used by REDUX.",
                     "fa_icon": "fas fa-cog"
                 },
+                "fix_mate_information": {
+                    "type": "boolean",
+                    "description": "Enable picard FixMateInformation to set mate cigar tag.",
+                    "default": false,
+                    "fa_icon": "fas fa-cog"
+                },
                 "gridss_config": {
                     "type": "string",
                     "description": "Path to GRIDSS configuration file.",

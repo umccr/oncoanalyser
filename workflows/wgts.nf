@@ -15,6 +15,7 @@ include { CIDER_CALLING         } from '../subworkflows/local/cider_calling'
 include { COBALT_PROFILING      } from '../subworkflows/local/cobalt_profiling'
 include { CUPPA_PREDICTION      } from '../subworkflows/local/cuppa_prediction'
 include { ESVEE_CALLING         } from '../subworkflows/local/esvee_calling'
+include { FIXMATE_REPAIR        } from '../subworkflows/local/fixmate_repair'
 include { ISOFOX_QUANTIFICATION } from '../subworkflows/local/isofox_quantification'
 include { LILAC_CALLING         } from '../subworkflows/local/lilac_calling'
 include { LINX_ANNOTATION       } from '../subworkflows/local/linx_annotation'
@@ -130,6 +131,37 @@ workflow WGTS {
     }
 
     //
+    // SUBWORKFLOW: Fix mate information (specifically mate CIGAR string)
+    //
+    // NOTE(SW): this should only run (or be run) for input alignments
+    // channel: [ meta, [bam], [bai] ]
+    ch_fixmate_dna_tumor_out = Channel.empty()
+    ch_fixmate_dna_normal_out = Channel.empty()
+    ch_fixmate_dna_donor_out = Channel.empty()
+    if (params.fix_mate_information === true) {
+
+        FIXMATE_REPAIR(
+            ch_inputs,
+            ref_data.genome_fasta,
+            ref_data.genome_fai,
+            ref_data.genome_dict,
+        )
+
+        ch_versions = ch_versions.mix(FIXMATE_REPAIR.out.versions)
+
+        ch_fixmate_dna_tumor_out = ch_fixmate_dna_tumor_out.mix(FIXMATE_REPAIR.out.dna_tumor)
+        ch_fixmate_dna_normal_out = ch_fixmate_dna_normal_out.mix(FIXMATE_REPAIR.out.dna_normal)
+        ch_fixmate_dna_donor_out = ch_fixmate_dna_donor_out.mix(FIXMATE_REPAIR.out.dna_donor)
+
+    } else {
+
+        ch_fixmate_dna_tumor_out = ch_inputs.map { meta -> [meta, [], []] }
+        ch_fixmate_dna_normal_out = ch_inputs.map { meta -> [meta, [], []] }
+        ch_fixmate_dna_donor_out = ch_inputs.map { meta -> [meta, [], []] }
+
+    }
+
+    //
     // SUBWORKFLOW: Run REDUX for DNA BAMs
     //
     // channel: [ meta, bam, bai ]
@@ -144,11 +176,25 @@ workflow WGTS {
 
     if (run_config.stages.redux) {
 
+        ch_redux_dna_tumor_input = Channel.empty()
+        ch_redux_dna_normal_input = Channel.empty()
+        ch_redux_dna_donor_input = Channel.empty()
+
+        if (params.fix_mate_information === true) {
+            ch_redux_dna_tumor_input = ch_fixmate_dna_tumor_out
+            ch_redux_dna_normal_input = ch_fixmate_dna_normal_out
+            ch_redux_dna_donor_input = ch_fixmate_dna_donor_out
+        } else {
+            ch_redux_dna_tumor_input = ch_align_dna_tumor_out
+            ch_redux_dna_normal_input = ch_align_dna_normal_out
+            ch_redux_dna_donor_input = ch_align_dna_donor_out
+        }
+
         REDUX_PROCESSING(
             ch_inputs,
-            ch_align_dna_tumor_out,
-            ch_align_dna_normal_out,
-            ch_align_dna_donor_out,
+            ch_redux_dna_tumor_input,
+            ch_redux_dna_normal_input,
+            ch_redux_dna_donor_input,
             ref_data.genome_fasta,
             ref_data.genome_version,
             ref_data.genome_fai,

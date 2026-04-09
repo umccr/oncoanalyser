@@ -39,8 +39,8 @@ workflow REDUX_PROCESSING {
         .map { meta, bams, bais ->
             return [
                 meta,
-                Utils.hasExistingInput(meta, Constants.INPUT.BAM_DNA_TUMOR) ? [Utils.getInput(meta, Constants.INPUT.BAM_DNA_TUMOR)] : bams,
-                Utils.hasExistingInput(meta, Constants.INPUT.BAI_DNA_TUMOR) ? [Utils.getInput(meta, Constants.INPUT.BAI_DNA_TUMOR)] : bais,
+                Utils.hasExistingInput(meta, Constants.INPUT.BAM_DNA_TUMOR) && !params.fix_mate_information ? [Utils.getInput(meta, Constants.INPUT.BAM_DNA_TUMOR)] : bams,
+                Utils.hasExistingInput(meta, Constants.INPUT.BAI_DNA_TUMOR) && !params.fix_mate_information ? [Utils.getInput(meta, Constants.INPUT.BAI_DNA_TUMOR)] : bais,
             ]
         }
         .branch { meta, bams, bais ->
@@ -54,8 +54,8 @@ workflow REDUX_PROCESSING {
         .map { meta, bams, bais ->
             return [
                 meta,
-                Utils.hasExistingInput(meta, Constants.INPUT.BAM_DNA_NORMAL) ? [Utils.getInput(meta, Constants.INPUT.BAM_DNA_NORMAL)] : bams,
-                Utils.hasExistingInput(meta, Constants.INPUT.BAI_DNA_NORMAL) ? [Utils.getInput(meta, Constants.INPUT.BAI_DNA_NORMAL)] : bais,
+                Utils.hasExistingInput(meta, Constants.INPUT.BAM_DNA_NORMAL) && !params.fix_mate_information ? [Utils.getInput(meta, Constants.INPUT.BAM_DNA_NORMAL)] : bams,
+                Utils.hasExistingInput(meta, Constants.INPUT.BAI_DNA_NORMAL) && !params.fix_mate_information ? [Utils.getInput(meta, Constants.INPUT.BAI_DNA_NORMAL)] : bais,
             ]
         }
         .branch { meta, bams, bais ->
@@ -69,8 +69,8 @@ workflow REDUX_PROCESSING {
         .map { meta, bams, bais ->
             return [
                 meta,
-                Utils.hasExistingInput(meta, Constants.INPUT.BAM_DNA_DONOR) ? [Utils.getInput(meta, Constants.INPUT.BAM_DNA_DONOR)] : bams,
-                Utils.hasExistingInput(meta, Constants.INPUT.BAI_DNA_DONOR) ? [Utils.getInput(meta, Constants.INPUT.BAI_DNA_DONOR)] : bais,
+                Utils.hasExistingInput(meta, Constants.INPUT.BAM_DNA_DONOR) && !params.fix_mate_information ? [Utils.getInput(meta, Constants.INPUT.BAM_DNA_DONOR)] : bams,
+                Utils.hasExistingInput(meta, Constants.INPUT.BAI_DNA_DONOR) && !params.fix_mate_information ? [Utils.getInput(meta, Constants.INPUT.BAI_DNA_DONOR)] : bais,
             ]
         }
         .branch { meta, bams, bais ->
